@@ -3,14 +3,34 @@ name: Update Playlist
 on:
   workflow_dispatch:   # 允许手动触发
   schedule:
-    - cron: "0 */6 * * *"
+    - cron: "0 2 * * *"  # 每天凌晨2点更新，可改
 
 jobs:
   update:
     runs-on: ubuntu-latest
+
     steps:
+      # 1️⃣ 拉取自己的仓库
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Test Step
-        run: echo "Hello GitHub Actions"
+      # 2️⃣ 拉取上游央视源到临时目录
+      - name: Fetch upstream playlist
+        run: |
+          mkdir tmp
+          curl -L "https://raw.githubusercontent.com/wwb521/live/main/tv/m3u/global.m3u" -o tmp/global.m3u
+
+      # 3️⃣ 拷贝到仓库根目录，覆盖旧文件
+      - name: Update local playlist
+        run: |
+          cp tmp/global.m3u ./playlist.m3u
+          rm -rf tmp
+
+      # 4️⃣ 提交并 push 到你自己的仓库
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playlist.m3u
+          git commit -m "Auto update live sources" || echo "No changes to commit"
+          git push
