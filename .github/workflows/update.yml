@@ -18,12 +18,12 @@ jobs:
       - name: Fetch upstream playlist
         run: |
           mkdir tmp
-          curl -L "https://raw.githubusercontent.com/wwb521/live/main/tv/m3u/global.m3u" -o tmp/global.m3u
+          curl -L "https://raw.githubusercontent.com/wwb521/live/refs/heads/main/tv.m3u" -o tmp/tv.m3u
 
       # 3️⃣ 拷贝到仓库根目录，覆盖旧文件
       - name: Update local playlist
         run: |
-          cp tmp/global.m3u ./playlist.m3u
+          cp tmp/tv.m3u ./playlist.m3u
           rm -rf tmp
 
       # 4️⃣ 提交并 push 到你自己的仓库
