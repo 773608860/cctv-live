@@ -1,0 +1,25 @@
+name: Update Playlist
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # 每6小时执行一次（可改成每天执行）
+  workflow_dispatch:         # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Fetch upstream playlist
+        run: |
+          curl -L "https://raw.githubusercontent.com/wwb521/live/main/tv/m3u/global.m3u" -o playlist.m3u
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playlist.m3u
+          git commit -m "Update playlist" || echo "No changes to commit"
+          git push
